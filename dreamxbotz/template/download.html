@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Downloading {{file_name}} - Hell King Premium</title>
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --border-color: #333333;
+            --accent-gold: #ffd700;
+            --accent-red: #e53935;
+            --accent-gradient: linear-gradient(135deg, var(--accent-red), var(--accent-gold));
+            --paused-color: #fdd835;
+            --cancelled-color: #b71c1c;
+            --completed-color: #4caf50;
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            background-image: radial-gradient(circle at 10% 20%, rgba(229, 57, 53, 0.1), transparent 50%),
+                radial-gradient(circle at 80% 90%, rgba(255, 215, 0, 0.1), transparent 50%);
+        }
+
+        .branding {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .download-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            transition: all 0.3s ease;
+        }
+
+        /* File Info */
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .file-icon {
+            font-size: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .file-details .file-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .file-details .file-meta {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Progress Section */
+        .progress-section {
+            text-align: center;
+        }
+
+        .progress-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: grid;
+            place-items: center;
+            background: conic-gradient(var(--accent-red) 0deg, var(--border-color) 0deg);
+            transition: background 0.5s ease-out;
+            position: relative;
+        }
+
+        .progress-circle::before {
+            content: '';
+            position: absolute;
+            width: 85%;
+            height: 85%;
+            background-color: var(--card-bg);
+            border-radius: 50%;
+        }
+
+        .progress-value {
+            position: relative;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .download-status-text {
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .completion-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 40px 0;
+        }
+
+        .completion-view .completion-icon {
+            font-size: 4rem;
+            color: var(--completed-color);
+        }
+
+        .completion-view h2 {
+            font-size: 1.2rem;
+            color: var(--completed-color);
+        }
+
+
+        /* Stats Section */
+        .stats-section {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 0;
+        }
+
+        .stat-item i {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .stat-item p {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-item span {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Internet Speed */
+        .internet-speed {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .internet-speed strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Action Buttons */
+        .action-buttons,
+        .action-buttons-completed {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .action-buttons-completed {
+            display: none;
+        }
+
+        .btn {
+            flex-grow: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-family: var(--font-family);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary { background: var(--accent-gradient); color: white; }
+        .btn-secondary { background-color: #3a3a3a; color: var(--text-primary); }
+        .btn-danger { background-color: #5c1f1e; color: #ff8a80; }
+        .btn-completed-open { background-color: var(--completed-color); color: white; }
+
+        /* State-specific styles */
+        .download-card.paused .progress-circle {
+            background: conic-gradient(var(--paused-color) 0deg, var(--border-color) 0deg);
+        }
+        .download-card.paused .download-status-text {
+            color: var(--paused-color);
+        }
+
+        .download-card.cancelled .progress-circle {
+            background: conic-gradient(var(--cancelled-color) 0deg, var(--border-color) 0deg);
+        }
+        .download-card.cancelled .download-status-text {
+            color: var(--cancelled-color);
+        }
+        .download-card.cancelled .btn {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .download-card.cancelled #cancelBtn {
+            opacity: 1;
+        }
+
+        .download-card.completed {
+            border-color: var(--completed-color);
+            box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+        }
+        .download-card.completed .progress-circle,
+        .download-card.completed .download-status-text {
+            display: none;
+        }
+        .download-card.completed .completion-view {
+            display: flex;
+            animation: fadeInScale 0.5s ease-out forwards;
+        }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .download-card.completed .action-buttons {
+            display: none;
+        }
+        .download-card.completed .action-buttons-completed {
+            display: flex;
+        }
+        .download-card.completed .stats-section,
+        .download-card.completed .internet-speed {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="branding">
+        <h1>𝐇𝐞𝐥𝐥 𝐊𝐢𝐧𝐠 𝐏𝐫𝐞𝐦𝐢𝐮𝐦</h1>
+    </header>
+
+    <main class="container">
+        <div class="download-card" id="downloadCard" data-total-bytes="{{total_size_bytes}}" data-file-url="{{actual_download_url}}" data-file-name="{{file_name}}">
+            <!-- File Info Section -->
+            <div class="file-info">
+                <i class="fas fa-file-video file-icon"></i>
+                <div class="file-details">
+                    <p class="file-name" id="fileName">{{file_name}}</p>
+                    <p class="file-meta"><span id="fileType">{{file_type}}</span> &bull; <span id="totalSize">{{total_size_formatted}}</span></p>
+                </div>
+            </div>
+
+            <!-- Progress Section -->
+            <div class="progress-section">
+                <div class="progress-circle" id="progressCircle">
+                    <div class="progress-value" id="progressValue">0%</div>
+                </div>
+                <p class="download-status-text" id="statusText">Initializing...</p>
+                <div class="completion-view" id="completionView">
+                    <i class="fas fa-check-circle completion-icon"></i>
+                    <h2>Download Starting...</h2>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-section">
+                <div class="stat-item">
+                    <i class="fas fa-arrow-down"></i>
+                    <p>DOWNLOADED</p>
+                    <span id="downloadedAmount">0 MB / {{total_size_formatted}}</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <p>SPEED</p>
+                    <span id="downloadSpeed">-- MB/s</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-clock"></i>
+                    <p>TIME LEFT</p>
+                    <span id="timeLeft">--:--</span>
+                </div>
+            </div>
+
+            <!-- Internet Speed -->
+            <div class="internet-speed">
+                <i class="fas fa-wifi"></i>
+                <span>Internet Speed: <strong id="internetSpeed">Checking...</strong></span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons" id="actionButtons">
+                <button class="btn btn-secondary" id="pauseResumeBtn"><i class="fas fa-pause"></i> Pause</button>
+                <button class="btn btn-danger" id="cancelBtn"><i class="fas fa-times"></i> Cancel</button>
+            </div>
+
+            <div class="action-buttons-completed" id="completionButtons">
+                <button class="btn btn-completed-open" onclick="alert('Your file has been downloaded! Check your browser downloads.')"><i class="fas fa-check"></i> Downloaded</button>
+                <button class="btn btn-secondary" onclick="window.close()"><i class="fas fa-power-off"></i> Close</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Confetti library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const downloadCard = document.getElementById('downloadCard');
+            const progressCircle = document.getElementById('progressCircle');
+            const progressValue = document.getElementById('progressValue');
+            const statusText = document.getElementById('statusText');
+            const downloadedAmount = document.getElementById('downloadedAmount');
+            const downloadSpeedEl = document.getElementById('downloadSpeed');
+            const timeLeftEl = document.getElementById('timeLeft');
+            const internetSpeedEl = document.getElementById('internetSpeed');
+            const pauseResumeBtn = document.getElementById('pauseResumeBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+
+            // --- DYNAMIC CONFIG FROM BACKEND ---
+            const TOTAL_SIZE_BYTES = parseInt(downloadCard.dataset.totalBytes, 10);
+            const ACTUAL_DOWNLOAD_URL = downloadCard.dataset.fileUrl;
+            const FILE_NAME = downloadCard.dataset.fileName;
+
+            let downloadedBytes = 0;
+            let downloadInterval;
+            let lastTimestamp = Date.now();
+            let lastDownloadedBytes = 0;
+            let status = 'initializing';
+
+            const formatBytes = (bytes, decimals = 2) => {
+                if (!+bytes) return '0 Bytes';
+                const k = 1024;
+                const dm = decimals < 0 ? 0 : decimals;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+            };
+
+            const formatTime = (seconds) => {
+                if (isNaN(seconds) || seconds === Infinity) return '--:--';
+                const m = Math.floor(seconds / 60);
+                const s = Math.floor(seconds % 60);
+                return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const updateUI = () => {
+                const progress = (downloadedBytes / TOTAL_SIZE_BYTES) * 100;
+                const progressDegrees = progress * 3.6;
+                const gradient = `conic-gradient(from 0deg at 50% 50%, var(--accent-red) 0deg, var(--accent-gold) ${progressDegrees * 0.5}deg, var(--accent-red) ${progressDegrees}deg, var(--border-color) ${progressDegrees}deg 360deg)`;
+
+                progressCircle.style.background = gradient;
+                progressValue.textContent = `${Math.floor(progress)}%`;
+                downloadedAmount.textContent = `${formatBytes(downloadedBytes)} / ${formatBytes(TOTAL_SIZE_BYTES)}`;
+
+                if (status === 'downloading') {
+                    const now = Date.now();
+                    const timeDiff = (now - lastTimestamp) / 1000;
+                    const bytesDiff = downloadedBytes - lastDownloadedBytes;
+                    if (timeDiff > 0.1) {
+                        const speed = bytesDiff / timeDiff;
+                        downloadSpeedEl.textContent = `${formatBytes(speed)}/s`;
+                        const remainingBytes = TOTAL_SIZE_BYTES - downloadedBytes;
+                        const remainingTime = speed > 0 ? remainingBytes / speed : Infinity;
+                        timeLeftEl.textContent = formatTime(remainingTime);
+                        lastTimestamp = now;
+                        lastDownloadedBytes = downloadedBytes;
+                    }
+                }
+            };
+
+            const simulateDownload = () => {
+                if (status !== 'downloading') return;
+                const randomChunk = (Math.random() * (TOTAL_SIZE_BYTES / 100) + (TOTAL_SIZE_BYTES / 200));
+                downloadedBytes = Math.min(downloadedBytes + randomChunk, TOTAL_SIZE_BYTES);
+
+                if (downloadedBytes >= TOTAL_SIZE_BYTES) {
+                    completeDownload();
+                }
+                requestAnimationFrame(updateUI);
+            };
+
+            const startDownload = () => {
+                status = 'downloading';
+                lastTimestamp = Date.now();
+                lastDownloadedBytes = downloadedBytes;
+                downloadInterval = setInterval(simulateDownload, 500);
+                statusText.textContent = 'Downloading...';
+                downloadCard.className = 'download-card';
+                pauseResumeBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+            };
+
+            const pauseDownload = () => {
+                status = 'paused';
+                clearInterval(downloadInterval);
+                downloadCard.classList.add('paused');
+                statusText.textContent = 'Paused';
+                downloadSpeedEl.textContent = '-- MB/s';
+                timeLeftEl.textContent = '--:--';
+                pauseResumeBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+            };
+
+            const cancelDownload = () => {
+                if (status === 'completed' || status === 'cancelled') return;
+                status = 'cancelled';
+                clearInterval(downloadInterval);
+                downloadCard.className = 'download-card cancelled';
+                statusText.textContent = 'Download Cancelled';
+            };
+
+            const triggerBrowserDownload = () => {
+                const link = document.createElement('a');
+                link.href = ACTUAL_DOWNLOAD_URL;
+                link.download = FILE_NAME;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            const completeDownload = () => {
+                status = 'completed';
+                clearInterval(downloadInterval);
+                downloadedBytes = TOTAL_SIZE_BYTES;
+                requestAnimationFrame(() => {
+                    updateUI();
+                    downloadCard.className = 'download-card completed';
+                    confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+                    triggerBrowserDownload();
+                });
+            };
+
+            const checkInternetSpeed = () => {
+                setTimeout(() => {
+                    const speed = (Math.random() * 90 + 10).toFixed(1);
+                    internetSpeedEl.innerHTML = `<strong>${speed} Mbps</strong>`;
+                }, 1500);
+            };
+
+            pauseResumeBtn.addEventListener('click', () => {
+                if (status === 'downloading') pauseDownload();
+                else if (status === 'paused') startDownload();
+            });
+            cancelBtn.addEventListener('click', cancelDownload);
+
+            const init = () => {
+                checkInternetSpeed();
+                setTimeout(startDownload, 2000);
+            };
+
+            init();
+        });
+    </script>
+</body>
+
+</html>
